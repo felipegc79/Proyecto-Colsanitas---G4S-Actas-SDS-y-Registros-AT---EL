@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Test IndexedDB</title>
+</head>
+
+<body>
+    <h1>Diagnóstico IndexedDB</h1>
+    <div id="log" style="font-family:monospace;white-space:pre;background:#111;color:#0f0;padding:20px;"></div>
+    <script>
+        const log = (msg) => { document.getElementById('log').textContent += msg + '\n'; console.log(msg); };
+
+        async function test() {
+            log('=== INICIO TEST ===');
+
+            // 1. Abrir DB
+            log('1. Abriendo ColsanitasDB_v3...');
+            const db = await new Promise((resolve, reject) => {
+                const req = indexedDB.open('ColsanitasDB_v3', 1);
+                req.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains('accidentes')) db.createObjectStore('accidentes', { autoIncrement: true });
+                    if (!db.objectStoreNames.contains('enfermedades')) db.createObjectStore('enfermedades', { autoIncrement: true });
+                    log('   Stores creados');
+                };
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => reject(req.error);
+            });
+            log('   ✅ DB abierta. Stores: ' + Array.from(db.objectStoreNames).join(', '));
+
+            // 2. Leer conteo actual
+            for (const store of ['accidentes', 'enfermedades']) {
+                const count = await new Promise(r => {
+                    const tx = db.transaction(store, 'readonly');
+                    const req = tx.objectStore(store).count();
+                    req.onsuccess = () => r(req.result);
+                });
+                log(`2. [${store}] tiene ${count} registros actualmente`);
+
+                if (count > 0) {
+                    // Leer primer registro
+                    const first = await new Promise(r => {
+                        const tx = db.transaction(store, 'readonly');
+                        const req = tx.objectStore(store).getAll();
+                        req.onsuccess = () => r(req.result[0]);
+                    });
+                    log(`   Primer registro tiene ${Object.keys(first).length} campos: ${Object.keys(first).slice(0, 8).join(', ')}...`);
+                    if (first.departamento) log(`   departamento: "${first.departamento}"`);
+                    if (first.parteCuerpo) log(`   parteCuerpo: "${first.parteCuerpo}"`);
+                    if (first.empresa) log(`   empresa: "${first.empresa}"`);
+                }
+            }
+
+            // 3. Test de escritura y lectura
+            log('\n3. Test de escritura y lectura...');
+            const testData = [
+                { id: 1, departamento: 'ANTIOQUIA', parteCuerpo: 'Mano', empresa: 'TEST' },
+                { id: 2, departamento: 'BOGOTA', parteCuerpo: 'Pie', empresa: 'TEST2' }
+            ];
+
+            await new Promise((resolve, reject) => {
+                const tx = db.transaction('accidentes', 'readwrite');
+                const store = tx.objectStore('accidentes');
+                store.clear();
+                testData.forEach(r => store.add(r));
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => reject(tx.error);
+            });
+            log('   ✅ 2 registros de prueba escritos');
+
+            const readBack = await new Promise(r => {
+                const tx = db.transaction('accidentes', 'readonly');
+                const req = tx.objectStore('accidentes').getAll();
+                req.onsuccess = () => r(req.result);
+            });
+            log(`   ✅ ${readBack.length} registros leídos`);
+            log(`   Campos: ${Object.keys(readBack[0]).join(', ')}`);
+            log(`   departamento: "${readBack[0].departamento}", parteCuerpo: "${readBack[0].parteCuerpo}"`);
+
+            // 4. AHORA REFRESCA LA PÁGINA para ver si persisten
+            log('\n4. ✅ TEST COMPLETADO');
+            log('   REFRESCA LA PÁGINA (F5) para verificar si los 2 registros persisten.');
+            log('   Si después de refrescar dice "accidentes tiene 0 registros", IndexedDB NO persiste en tu navegador.');
+        }
+
+        test().catch(e => log('❌ ERROR: ' + e));
+    </script>
+</body>
+
+</html>
