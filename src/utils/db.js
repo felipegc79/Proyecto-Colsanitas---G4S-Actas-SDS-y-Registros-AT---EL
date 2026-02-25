@@ -75,6 +75,23 @@ export async function getAllFromDB(storeName) {
     });
 }
 
+export async function clearAllDB() {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(["accidentes", "enfermedades"], "readwrite");
+        tx.objectStore("accidentes").clear();
+        tx.objectStore("enfermedades").clear();
+        tx.oncomplete = () => {
+            console.log("✅ DB: Ambos stores limpiados.");
+            resolve(true);
+        };
+        tx.onerror = () => {
+            console.error("❌ DB: Error limpiando stores.", tx.error);
+            reject(tx.error);
+        }
+    });
+}
+
 // Limpiar bases de datos antiguas para evitar confusión
 (async function cleanupOldDBs() {
     const oldNames = ["ColsanitasRegistrosDB", "ColsanitasDB_v2", "ColsanitasDB_v3"];

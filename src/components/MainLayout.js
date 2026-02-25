@@ -150,13 +150,15 @@ const MainLayout = () => {
     <div style={{ display: "flex", height: "100vh", backgroundColor: "var(--colsanitas-light-grey)" }}>
       {/* Sidebar */}
       <div className="sidebar" style={{ display: "flex", flexDirection: "column" }}>
-        <div style={{ padding: "30px 24px", textAlign: "left", background: "white", marginBottom: "10px" }}>
+        <div style={{ padding: "30px 24px", textAlign: "center", background: "white", borderBottom: "1px solid rgba(0,0,0,0.05)" }}>
           <img
-            src={`/logo-colsanitas.png?v=${Date.now()}`}
+            src={`/Seguros-Colsanitas-ARL.png?v=${Date.now()}`}
             alt="Colsanitas"
-            style={{ width: "100%", maxWidth: "180px" }}
+            style={{ width: "100%", maxWidth: "180px", margin: "0 auto", display: "block" }}
           />
-          <p style={{ color: "rgba(0,0,0,0.6)", fontSize: "10px", marginTop: "10px", textTransform: "uppercase", letterSpacing: "1px", fontWeight: "600" }}>
+        </div>
+        <div style={{ padding: "15px 24px 5px", textAlign: "center" }}>
+          <p style={{ color: "white", fontSize: "11px", textTransform: "uppercase", letterSpacing: "1px", fontWeight: "700" }}>
             Módulo de Registros AT y EL
           </p>
         </div>

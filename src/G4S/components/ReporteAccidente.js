@@ -1316,6 +1316,17 @@ const ReporteAccidente = () => {
           </div>
 
           <div>
+            <label style={labelStyle}>ID Registro</label>
+            <input
+              name="id"
+              value={formData.id || ""}
+              readOnly
+              disabled={fieldsDisabled}
+              style={{ ...inputStyle, background: "#f0f0f0" }}
+            />
+          </div>
+
+          <div>
             <label style={labelStyle}>Línea de Negocio</label>
             <select
               name="lineaNegocio"

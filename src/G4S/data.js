@@ -290,17 +290,15 @@ const STORAGE_KEY_WORKERS = "g4s_workers_db_v2";
 const loadDataAT = () => {
   const stored = localStorage.getItem(STORAGE_KEY_AT);
   if (stored) return JSON.parse(stored);
-  const initialData = generateATData();
-  localStorage.setItem(STORAGE_KEY_AT, JSON.stringify(initialData));
-  return initialData;
+  localStorage.setItem(STORAGE_KEY_AT, JSON.stringify([]));
+  return [];
 };
 
 const loadDataEL = () => {
   const stored = localStorage.getItem(STORAGE_KEY_EL);
   if (stored) return JSON.parse(stored);
-  const initialData = generateELData();
-  localStorage.setItem(STORAGE_KEY_EL, JSON.stringify(initialData));
-  return initialData;
+  localStorage.setItem(STORAGE_KEY_EL, JSON.stringify([]));
+  return [];
 };
 
 const loadWorkers = () => {
@@ -350,6 +348,15 @@ export const deleteRecordEL = (id) => {
 export const saveWorkers = (workers) => {
   Object.assign(dataWorkers, workers);
   localStorage.setItem(STORAGE_KEY_WORKERS, JSON.stringify(dataWorkers));
+};
+
+export const resetDatabase = async () => {
+  console.log("⚠️ Resetting entire database");
+  dataAT.length = 0;
+  dataEL.length = 0;
+  localStorage.setItem(STORAGE_KEY_AT, JSON.stringify([]));
+  localStorage.setItem(STORAGE_KEY_EL, JSON.stringify([]));
+  return true;
 };
 
 export default dataAT;

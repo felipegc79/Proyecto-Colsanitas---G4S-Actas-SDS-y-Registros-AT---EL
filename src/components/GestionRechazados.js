@@ -26,7 +26,7 @@ const OPCIONES_ESTADO_EMPRESA = ["Activa", "Inactiva", "En Liquidación"];
 const OPCIONES_MESES = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
 const OPCIONES_SEVERIDAD = ["Leve", "Grave", "Fatal", "Severo"];
 const OPCIONES_SINO = ["SI", "NO"];
-const OPCIONES_ESTADO_CASO = ["Abierto", "Cerrado", "Reaperturado"];
+const OPCIONES_ESTADO_CASO = ["En Calificación", "Cerrado", "Reaperturado"];
 const OPCIONES_JORNADA = ["Diurna", "Nocturna", "Mixta", "Por turnos"];
 const OPCIONES_DIAS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
 const OPCIONES_LATERALIDAD = ["Derecha", "Izquierda", "Bilateral", "N/A"];
@@ -113,7 +113,7 @@ const GestionRechazados = () => {
     casoPRI: "",
     fechaIngresoPRI: "",
     atMortal: "",
-    estadoCaso: "Abierto",
+    estadoCaso: "En Calificación",
     fechaCierre: "",
     mesCierre: "",
     anioCierre: "",
@@ -143,6 +143,11 @@ const GestionRechazados = () => {
   };
 
   const [formData, setFormData] = useState(initialForm);
+
+  const [userRole, setUserRole] = useState("");
+  useEffect(() => {
+    setUserRole(localStorage.getItem("userRole") || "");
+  }, []);
 
   // --- HANDLERS ---
   const handleChange = (e) => {
@@ -212,7 +217,11 @@ const GestionRechazados = () => {
   // --- FILTRADO ---
   const filteredRecords = useMemo(() => {
     // PASO 1: Filtrar solo registros Rechazados u Objetados
-    const rejectedOnly = records.filter(r => ESTADOS_RECHAZO.includes(r.estado) || (r.estadoCaso && ESTADOS_RECHAZO.includes(r.estadoCaso)));
+    const rejectedOnly = records.filter(r => {
+      const e = (r.estado || "").toLowerCase();
+      const ec = (r.estadoCaso || "").toLowerCase();
+      return e === "rechazado" || e === "objetado" || ec === "rechazado" || ec === "objetado";
+    });
 
     // PASO 2: Aplicar filtros de usuario
     return rejectedOnly.filter(r => {
@@ -246,6 +255,7 @@ const GestionRechazados = () => {
 
   // --- RENDER FORM ---
   const isReadOnly = mode === "view";
+  const disabledFields = mode === "view" || (mode === "edit" && userRole === "Empresa");
 
 
 
@@ -260,29 +270,29 @@ const GestionRechazados = () => {
         </button>
       </div>
 
-      <fieldset disabled={isReadOnly} style={{ border: "none", padding: 0, margin: 0 }}>
-
-        {/* CAMPO ESTADO PRINCIPAL */}
-        <div style={{ backgroundColor: "#EFF6FF", padding: "15px", borderRadius: "8px", border: "1px solid #BFDBFE", marginBottom: "20px" }}>
-          <h3 style={{ color: "#1E3A8A", marginTop: 0, fontSize: "16px" }}>Gestión del Estado</h3>
-          <div className="form-grid">
-            <label style={{ fontWeight: "bold", color: "#1E3A8A" }}>
-              Nuevo Estado del Caso:
-              <select
-                name="estadoGestion"
-                value={formData.estadoGestion}
-                onChange={handleChange}
-                className="input-colsanitas"
-                disabled={isReadOnly}
-                style={{ border: "2px solid #2563EB" }}
-              >
-                <option value="">Seleccione...</option>
-                <option value="Aprobado">Aprobado</option>
-                <option value="Rechazado">Rechazado</option>
-              </select>
-            </label>
-          </div>
+      <div style={{ backgroundColor: "#EFF6FF", padding: "15px", borderRadius: "8px", border: "1px solid #BFDBFE", marginBottom: "20px" }}>
+        <h3 style={{ color: "#1E3A8A", marginTop: 0, fontSize: "16px" }}>Gestión del Estado</h3>
+        <div className="form-grid">
+          <label style={{ fontWeight: "bold", color: "#1E3A8A" }}>
+            Nuevo Estado del Caso:
+            <select
+              name="estadoGestion"
+              value={formData.estadoGestion}
+              onChange={handleChange}
+              className="input-colsanitas"
+              disabled={isReadOnly} // Solo bloqueado si es "view", nunca bloqueado para "edit"
+              style={{ border: "2px solid #2563EB" }}
+            >
+              <option value="">Seleccione...</option>
+              <option value="Aprobado">Aprobado</option>
+              <option value="Rechazado">Rechazado</option>
+              <option value="Objetado">Objetado</option>
+            </select>
+          </label>
         </div>
+      </div>
+
+      <fieldset disabled={disabledFields} style={{ border: "none", padding: 0, margin: 0 }}>
 
         {/* 1. Información del Registro */}
         <h3 className="section-title">1. Información del Registro</h3>

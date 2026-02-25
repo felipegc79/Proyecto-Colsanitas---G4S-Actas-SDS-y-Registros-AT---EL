@@ -76,7 +76,164 @@ const DataTable = ({ data, columns }) => (
   </div>
 );
 
+const THEME_GREEN = { top: '#a1d4bd', from: '#00331e', via: '#008d4c', to: '#00b288', text: '#00643A' };
 
+const VerticalBarChart3D = ({ data, theme, themes }) => {
+  if (!data || data.length === 0)
+    return <p style={{ fontSize: '12px', color: '#999', padding: '16px 0', textAlign: 'center' }}>Sin datos.</p>;
+  const maxVal = Math.max(...data.map((d) => d.total || d.value || 0), 1);
+  return (
+    <>
+      <style>{`
+        .vbar-chart-container {
+          height: 300px;
+          display: flex;
+          align-items: flex-end;
+          gap: 20px;
+          margin-top: 10px;
+          padding: 0 16px 8px 16px;
+          border-bottom: 1px solid #f3f4f6;
+          overflow-x: auto;
+          width: 100%;
+          justify-content: space-around;
+        }
+        .vbar-chart-container::-webkit-scrollbar {
+          height: 6px;
+        }
+        .vbar-chart-container::-webkit-scrollbar-thumb {
+          background-color: #cbd5e1;
+          border-radius: 4px;
+        }
+        .vbar-group {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          position: relative;
+          height: 100%;
+          justify-content: flex-end;
+          min-width: 80px;
+          flex: 1;
+        }
+        .vbar-tooltip {
+          position: absolute;
+          bottom: 105%;
+          margin-bottom: 8px;
+          font-size: 13px;
+          font-weight: bold;
+          background-color: #111827;
+          color: white;
+          padding: 8px 14px;
+          border-radius: 8px;
+          box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+          opacity: 0;
+          transition: opacity 0.2s;
+          white-space: nowrap;
+          z-index: 20;
+          pointer-events: none;
+        }
+        .vbar-group:hover .vbar-tooltip {
+          opacity: 1;
+        }
+        .vbar-tooltip::after {
+          content: "";
+          position: absolute;
+          top: 100%;
+          left: 50%;
+          transform: translateX(-50%);
+          border-width: 6px;
+          border-style: solid;
+          border-color: #111827 transparent transparent transparent;
+        }
+        .vbar-bar-wrapper {
+          width: 50px;
+          position: relative;
+          display: flex;
+          align-items: flex-end;
+          height: 200px;
+          cursor: pointer;
+        }
+        .vbar-bar {
+          width: 100%;
+          position: relative;
+          margin: 0 auto;
+          transition: filter 0.3s ease-in-out;
+        }
+        .vbar-group:hover .vbar-bar {
+          filter: brightness(1.15);
+        }
+        .vbar-label {
+          font-size: 11px;
+          color: #4b5563;
+          margin-top: 16px;
+          font-weight: bold;
+          white-space: normal;
+          width: 100px;
+          text-align: center;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          line-height: 1.2;
+        }
+        .vbar-value {
+          font-size: 16px;
+          font-weight: 900;
+          margin-top: 6px;
+        }
+      `}</style>
+      <div className="vbar-chart-container">
+        {data.map((item, idx) => (
+          <div key={idx} className="vbar-group">
+            <div className="vbar-tooltip">
+              {item.name || item.label}: {item.total || item.value || 0}
+            </div>
+            <div className="vbar-bar-wrapper">
+              <div
+                className="vbar-bar"
+                style={{
+                  height: `${((item.total || item.value || 0) / maxVal) * 100}%`,
+                  minHeight: '20px'
+                }}
+              >
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '0',
+                    left: '0',
+                    width: '100%',
+                    height: '18px',
+                    borderRadius: '50%',
+                    transform: 'translateY(-50%)',
+                    boxShadow: 'inset 0 3px 6px rgba(255,255,255,0.7)',
+                    zIndex: 10,
+                    backgroundColor: themes ? themes[idx % themes.length].top : theme.top
+                  }}
+                ></div>
+                <div
+                  style={{
+                    position: 'absolute',
+                    bottom: '0',
+                    left: '0',
+                    width: '100%',
+                    height: '100%',
+                    background: `linear-gradient(to right, ${themes ? themes[idx % themes.length].from : theme.from}, ${themes ? themes[idx % themes.length].via : theme.via}, ${themes ? themes[idx % themes.length].to : theme.to})`,
+                    borderBottomLeftRadius: '50% 18px',
+                    borderBottomRightRadius: '50% 18px',
+                    boxShadow: '-4px 0px 8px rgba(0,0,0,0.2) inset, 4px 0px 8px rgba(255,255,255,0.3) inset, 0px 15px 20px -5px rgba(0,0,0,0.4)'
+                  }}
+                ></div>
+              </div>
+            </div>
+            <span className="vbar-label" title={item.name || item.label}>
+              {item.name || item.label}
+            </span>
+            <span className="vbar-value" style={{ color: themes ? themes[idx % themes.length].text : theme.text }}>
+              {item.total || item.value || 0}
+            </span>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+};
 const Dashboard = ({ dataWorkers }) => {
   const navigate = useNavigate();
   const [userName, setUserName] = useState("Usuario");
@@ -274,9 +431,7 @@ const Dashboard = ({ dataWorkers }) => {
       .sort((a, b) => b.value - a.value);
 
     if (data.length > 10) {
-      const top10 = data.slice(0, 10);
-      const others = data.slice(10).reduce((acc, curr) => acc + curr.value, 0);
-      data = [...top10, { name: "Otros", value: others }];
+      data = data.slice(0, 10);
     }
     return data;
   }, [filteredData]);
@@ -324,12 +479,80 @@ const Dashboard = ({ dataWorkers }) => {
   }, [filteredData, caracterizacionMode]);
 
   const mapData = useMemo(() => {
-    const counts = {};
-    filteredData.forEach(item => {
-      if (item.departamento) counts[item.departamento] = (counts[item.departamento] || 0) + 1;
+    const isMonthFilter = !!filters.mes;
+    const currentYearStr = filters.anio || new Date().getFullYear().toString();
+    const prevYearStr = (parseInt(currentYearStr) - 1).toString();
+
+    let currentMesIdx = isMonthFilter ? LISTA_MESES.indexOf(filters.mes) : -1;
+    let prevMesName = "";
+    let prevMesYearStr = currentYearStr;
+    if (isMonthFilter) {
+      if (currentMesIdx === 0) {
+        prevMesName = LISTA_MESES[11]; // DICIEMBRE
+        prevMesYearStr = prevYearStr; // Año anterior
+      } else {
+        prevMesName = LISTA_MESES[currentMesIdx - 1]; // Mes anterior
+        prevMesYearStr = currentYearStr;
+      }
+    }
+
+    // Función helper para contar y agrupar por departamento con filtros específicos aplicados
+    const getCounts = (targetYear, targetMonth) => {
+      const counts = {};
+      rawData.forEach(item => {
+        // Enforce temporal constraints
+        if (item.anio !== targetYear) return;
+        if (isMonthFilter && item.mes !== targetMonth) return;
+
+        // Enforce all other active filters (except department and temporal ones)
+        if (filters.ciudad && item.ciudad !== filters.ciudad) return;
+        if (filters.grupoEmpresarial && item.grupoEmpresarial !== filters.grupoEmpresarial) return;
+        const regionItem = getRegional(item.departamento, item.ciudad);
+        if (filters.regional && regionItem !== filters.regional) return;
+        if (userEntity ? item.empresa !== userEntity : (filters.empresa && item.empresa !== filters.empresa)) return;
+        if (filters.centroCosto && item.centroCosto !== filters.centroCosto) return;
+        if (filters.tipoVinculacion && item.tipoVinculacion !== filters.tipoVinculacion) return;
+
+        // Populate counts
+        if (item.departamento) {
+          const k = item.departamento;
+          counts[k] = (counts[k] || 0) + 1;
+        }
+      });
+      return counts;
+    };
+
+    const currentCounts = getCounts(currentYearStr, filters.mes);
+    const prevCounts = getCounts(prevMesYearStr, prevMesName);
+    const totalWorkers = datosBase.trabajadores || 1;
+
+    const countsWithStatus = {};
+    // Check all departments present in either current or prev
+    const allDepts = new Set([...Object.keys(currentCounts), ...Object.keys(prevCounts)]);
+
+    allDepts.forEach(dept => {
+      const cCurrent = currentCounts[dept] || 0;
+      const cPrev = prevCounts[dept] || 0;
+
+      const rateCurrent = (cCurrent / totalWorkers) * 100;
+      const ratePrev = (cPrev / totalWorkers) * 100;
+
+      let status;
+      if (cCurrent === 0 && cPrev === 0) {
+        status = "green";
+      } else {
+        const cumple = rateCurrent <= ratePrev;
+        const alRas = Math.abs(rateCurrent - ratePrev) < 0.01 && rateCurrent > 0;
+        if (alRas) status = "yellow";
+        else if (cumple) status = "green";
+        else status = "red";
+      }
+
+      countsWithStatus[dept] = { count: cCurrent, status };
     });
-    return counts;
-  }, [filteredData]);
+
+    return countsWithStatus;
+  }, [filters, userEntity, rawData, datosBase]);
 
   const alertasInvestigacion = useMemo(() => {
     const isClosed = (estado) => {
@@ -397,7 +620,7 @@ const Dashboard = ({ dataWorkers }) => {
     } else {
       let allCases = withDays.filter(item => {
         const isCurrentYear = item.anio === currentYearStr || (item.originalMs && new Date(item.originalMs).getFullYear().toString() === currentYearStr);
-        return item.daysRemaining >= 1 && isCurrentYear;
+        return !isClosed(item.estadoCaso) && item.daysRemaining >= 1 && isCurrentYear;
       });
       allCases.sort((a, b) => a.daysRemaining - b.daysRemaining);
       return allCases.slice(0, 15);
@@ -504,16 +727,16 @@ const Dashboard = ({ dataWorkers }) => {
       </div>
 
       {/* RF-NEW: Datos Base para Cálculos */}
-      <div className="card" style={{ backgroundColor: "#FFF7ED", border: "1px solid #FDBA74", marginBottom: "30px", borderRadius: "12px", boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05)" }}>
-        <h3 style={{ fontSize: "15px", color: "#9A3412", marginBottom: "15px", display: "flex", alignItems: "center", gap: "10px", padding: "10px 15px", borderBottom: "1px solid #FDBA74", margin: 0, backgroundColor: "#FFEDD5", borderRadius: "12px 12px 0 0" }}>
-          <div style={{ background: "rgba(255,255,255,0.5)", padding: "4px", borderRadius: "6px" }}>
-            <Settings size={18} color="#C2410C" />
+      <div className="card" style={{ backgroundColor: "#E6F4ED", border: "1px solid #A1D4BD", marginBottom: "30px", borderRadius: "12px", boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05)" }}>
+        <h3 style={{ fontSize: "15px", color: "#00643A", marginBottom: "15px", display: "flex", alignItems: "center", gap: "10px", padding: "10px 15px", borderBottom: "1px solid #A1D4BD", margin: 0, backgroundColor: "#D1EADF", borderRadius: "12px 12px 0 0" }}>
+          <div style={{ background: "rgba(255,255,255,0.7)", padding: "4px", borderRadius: "6px" }}>
+            <Settings size={18} color="#008D4C" />
           </div>
-          Datos Base para Cálculos (Dinámicos según Filtro): <span style={{ fontWeight: "400", fontSize: "13px", marginLeft: "5px", color: "#C2410C" }}>Cálculo de Indicadores: (Cantidad de registros / Cantidad de Trabajadores) * 100</span>
+          Datos Base para Cálculos (Dinámicos según Filtro): <span style={{ fontWeight: "400", fontSize: "13px", marginLeft: "5px", color: "#008D4C" }}>Cálculo de Indicadores: (Cantidad de registros / Cantidad de Trabajadores) * 100</span>
         </h3>
         <div style={{ padding: "20px", display: "flex", gap: "30px", flexWrap: "wrap", alignItems: "center" }}>
           <div style={{ flex: "0 1 auto" }}>
-            <label style={{ display: "block", fontSize: "13px", fontWeight: "800", color: "#9A3412", marginBottom: "8px" }}>Total Trabajadores:</label>
+            <label style={{ display: "block", fontSize: "13px", fontWeight: "800", color: "#00643A", marginBottom: "8px" }}>Total Trabajadores:</label>
             <div style={{
               backgroundColor: "#E2E8F0",
               padding: "10px 20px",
@@ -529,7 +752,7 @@ const Dashboard = ({ dataWorkers }) => {
             </div>
           </div>
           <div style={{ flex: "0 1 auto" }}>
-            <label style={{ display: "block", fontSize: "13px", fontWeight: "800", color: "#9A3412", marginBottom: "8px" }}>Horas Hombre Trabajadas:</label>
+            <label style={{ display: "block", fontSize: "13px", fontWeight: "800", color: "#00643A", marginBottom: "8px" }}>Horas Hombre Trabajadas:</label>
             <div style={{
               backgroundColor: "#E2E8F0",
               padding: "10px 20px",
@@ -548,27 +771,27 @@ const Dashboard = ({ dataWorkers }) => {
       </div>
 
       {/* Alerta Investigaciones por Vencer RF09 */}
-      <div className="card" style={{ backgroundColor: "#FFFBEB", border: "1px solid #FBD38D", marginBottom: "30px", borderRadius: "12px", boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05)" }}>
+      <div className="card" style={{ backgroundColor: "#F0FCF5", border: "1px solid #B0E3CA", marginBottom: "30px", borderRadius: "12px", boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05)" }}>
         <div
-          style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 15px", borderBottom: showInvestigaciones ? "1px solid #FBD38D" : "none", backgroundColor: "#FFFAF0", borderRadius: showInvestigaciones ? "12px 12px 0 0" : "12px", cursor: "pointer" }}
+          style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 15px", borderBottom: showInvestigaciones ? "1px solid #B0E3CA" : "none", backgroundColor: "#E6F4ED", borderRadius: showInvestigaciones ? "12px 12px 0 0" : "12px", cursor: "pointer" }}
           onClick={() => setShowInvestigaciones(!showInvestigaciones)}
         >
-          <h3 style={{ fontSize: "15px", color: "#975A16", margin: 0, display: "flex", alignItems: "center", gap: "10px" }}>
+          <h3 style={{ fontSize: "15px", color: "#00643A", margin: 0, display: "flex", alignItems: "center", gap: "10px" }}>
             <AlertCircle size={18} />
-            Investigaciones Próximas a Vencer (Plazo 10 días)
+            Orígenes Próximos a Vencer (Plazo 10 días)
           </h3>
-          {showInvestigaciones ? <ChevronUp size={20} color="#975A16" /> : <ChevronDown size={20} color="#975A16" />}
+          {showInvestigaciones ? <ChevronUp size={20} color="#00643A" /> : <ChevronDown size={20} color="#00643A" />}
         </div>
         {showInvestigaciones && (
           <div style={{ padding: "0 15px 15px 15px", paddingTop: "15px" }}>
             <table style={{ width: "100%", fontSize: "13px", borderCollapse: "separate", borderSpacing: "0 8px" }}>
               <thead>
                 <tr>
-                  <th align="left" style={{ padding: "8px", color: "#744210" }}>Días Faltantes</th>
-                  <th align="left" style={{ padding: "8px", color: "#744210" }}>Fecha Límite</th>
-                  <th align="left" style={{ padding: "8px", color: "#744210" }}>Trabajador</th>
-                  <th align="left" style={{ padding: "8px", color: "#744210" }}>Empresa</th>
-                  <th align="left" style={{ padding: "8px", color: "#744210" }}>Estado</th>
+                  <th align="left" style={{ padding: "8px", color: "#00643A" }}>Días Faltantes</th>
+                  <th align="left" style={{ padding: "8px", color: "#00643A" }}>Fecha Límite</th>
+                  <th align="left" style={{ padding: "8px", color: "#00643A" }}>Trabajador</th>
+                  <th align="left" style={{ padding: "8px", color: "#00643A" }}>Empresa</th>
+                  <th align="left" style={{ padding: "8px", color: "#00643A" }}>Estado</th>
                 </tr>
               </thead>
               <tbody>
@@ -592,7 +815,9 @@ const Dashboard = ({ dataWorkers }) => {
                     <td style={{ padding: "12px", fontWeight: "500" }}>{item.apellidosNombres || "PENDIENTE"}</td>
                     <td style={{ padding: "12px" }}>{item.empresa}</td>
                     <td style={{ padding: "12px", borderRadius: "0 8px 8px 0" }}>
-                      <span style={{ backgroundColor: "#FEF2F2", color: "#991B1B", padding: "4px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: "600", border: "1px solid #FECACA" }}>{item.estadoCaso}</span>
+                      <span style={{ backgroundColor: "#FEF2F2", color: "#991B1B", padding: "4px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: "600", border: "1px solid #FECACA" }}>
+                        {item.estadoCaso === "Abierto" ? "En Calificación" : item.estadoCaso}
+                      </span>
                     </td>
                   </tr>
                 ))}
@@ -658,26 +883,7 @@ const Dashboard = ({ dataWorkers }) => {
             <div style={{ background: "#E6FFFA", padding: "6px", borderRadius: "8px" }}><Users size={20} color="var(--colsanitas-green)" /></div>
             Top Empresas con Accidentes
           </h3>
-          <ResponsiveContainer width="100%" height={400}>
-            <BarChart data={dataByEmpresa} layout="vertical" margin={{ top: 5, right: 30, left: 10, bottom: 5 }}>
-              <defs>
-                <linearGradient id="barGradient" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="#008D4C" stopOpacity={0.8} />
-                  <stop offset="100%" stopColor="#97C01E" stopOpacity={0.8} />
-                </linearGradient>
-                <filter id="shadowBar" height="130%">
-                  <feDropShadow dx="3" dy="3" stdDeviation="2" floodColor="rgba(0,0,0,0.3)" />
-                </filter>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#E2E8F0" />
-              <XAxis type="number" hide />
-              <YAxis dataKey="name" type="category" width={180} tick={{ fontSize: 13, fill: "#2D3748", fontWeight: "500" }} interval={0} />
-              <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="value" fill="url(#barGradient)" radius={[0, 10, 10, 0]} barSize={25} style={{ filter: "url(#shadowBar)" }}>
-                <LabelList dataKey="value" position="right" style={{ fontSize: "14px", fontWeight: "bold", fill: "#4A5568" }} />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+          <VerticalBarChart3D data={dataByEmpresa} theme={THEME_GREEN} />
           <DataTable data={dataByEmpresa} columns={["Nombre", "Cantidad"]} />
         </div>
       </div>

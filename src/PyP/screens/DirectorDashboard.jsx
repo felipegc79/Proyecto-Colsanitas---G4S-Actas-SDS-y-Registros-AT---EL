@@ -1522,6 +1522,9 @@ const DirectorDashboard = ({
     <AppLayout title="Director de Prevención" onNavigate={null}>
       <div className="flex flex-col md:flex-row min-h-[calc(100vh-80px)] bg-gray-50">
         <aside className="w-full md:w-64 bg-white border-r border-gray-200 flex-shrink-0">
+          <div className="p-6 pb-2 border-b border-gray-100 flex justify-center">
+            <img src="/Seguros-Colsanitas-ARL.png" alt="Logo Colsanitas" className="w-full max-w-[180px] object-contain drop-shadow-sm" />
+          </div>
           <div className="p-6 border-b border-gray-100">
             <div className="flex items-center gap-3 mb-1">
               <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-lg">

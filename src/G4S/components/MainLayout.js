@@ -28,31 +28,34 @@ const MainLayout = () => {
   const navItemStyle = (moduleName) => ({
     padding: "15px 20px",
     cursor: "pointer",
-    backgroundColor: activeModule === moduleName ? "#CD1920" : "transparent",
-    borderBottom: "1px solid #444",
+    backgroundColor: activeModule === moduleName ? "#f8d7da" : "transparent",
+    color: activeModule === moduleName ? "#CD1920" : "#333",
+    borderBottom: "1px solid #eee",
     transition: "0.3s",
     display: "flex",
     alignItems: "center",
     gap: "10px",
+    fontWeight: activeModule === moduleName ? "bold" : "normal"
   });
 
   return (
-    <div className="g4s-root" style={{ display: "flex", width: "100vw" }}>
+    <div className="g4s-root" style={{ display: "flex", width: "100vw", height: "100vh", backgroundColor: "#f9fafb" }}>
       {/* --- SIDEBAR --- */}
       <div style={{
         width: "260px",
-        backgroundColor: "#333",
-        color: "white",
+        backgroundColor: "#ffffff",
+        color: "#333",
         display: "flex",
         flexDirection: "column",
         boxShadow: "2px 0 5px rgba(0,0,0,0.1)",
-        flexShrink: 0 // Evitar que se encoja
+        flexShrink: 0,
+        borderRight: "1px solid #eee"
       }}>
-        <div style={{ padding: "20px", textAlign: "center", borderBottom: "1px solid #555" }}>
+        <div style={{ padding: "20px", textAlign: "center", borderBottom: "1px solid #eee" }}>
           <img
             src="/logo-G4S.png"
             alt="G4S Logo"
-            style={{ width: "80%", maxWidth: "150px", background: "white", padding: "10px", borderRadius: "5px" }}
+            style={{ width: "80%", maxWidth: "150px", padding: "10px" }}
           />
         </div>
 
@@ -74,7 +77,7 @@ const MainLayout = () => {
               🩺 Registros de EL
             </li>
 
-            <li style={{ padding: "10px 20px", fontSize: "0.8em", color: "#95a5a6", textTransform: "uppercase", marginTop: "10px" }}>
+            <li style={{ padding: "10px 20px", fontSize: "0.8em", color: "#888", textTransform: "uppercase", marginTop: "10px", fontWeight: "bold" }}>
               Cargas Masivas
             </li>
             <li onClick={() => setActiveModule("carga_furat")} style={navItemStyle("carga_furat")}>
@@ -86,7 +89,7 @@ const MainLayout = () => {
           </ul>
         </nav>
 
-        <div style={{ padding: "15px", fontSize: "0.7em", color: "#aaa", textAlign: "center", borderTop: "1px solid #444" }}>
+        <div style={{ padding: "15px", fontSize: "0.7em", color: "#888", textAlign: "center", borderTop: "1px solid #eee" }}>
           Versión Integrada 2.3
         </div>
       </div>

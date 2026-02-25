@@ -109,7 +109,12 @@ const ColombiaMap = ({
     if (!mapInstance.current || !colombiaGeo) return;
     if (geoJsonLayer.current) mapInstance.current.removeLayer(geoJsonLayer.current);
 
-    const getColor = (d) => {
+    const getColor = (d, statusExt) => {
+      if (statusExt) {
+        if (statusExt === "red") return "#E53E3E";
+        if (statusExt === "yellow") return "#ECC94B";
+        if (statusExt === "green") return "#48BB78";
+      }
       if (d > thresholds.high) return '#CD1920'; // ROJO (Alta)
       if (d >= thresholds.medium) return '#FFC107'; // AMARILLO (Media)
       if (d > 0) return '#4CAF50';   // VERDE (Baja)
@@ -120,7 +125,13 @@ const ColombiaMap = ({
       let nombreDpt = feature.properties.NOMBRE_DPT || feature.properties.NAME_1;
       if (nombreDpt) nombreDpt = nombreDpt.toUpperCase();
 
-      const count = lookupCount(nombreDpt, data);
+      const countData = lookupCount(nombreDpt, data);
+      let count = countData;
+      let externalStatus = null;
+      if (typeof countData === "object" && countData !== null) {
+        count = countData.count || 0;
+        externalStatus = countData.status;
+      }
 
       // Lógica de Transparencia
       let opacity = 0.7;
@@ -134,7 +145,7 @@ const ColombiaMap = ({
       }
 
       return {
-        fillColor: getColor(count),
+        fillColor: getColor(count, externalStatus),
         weight: 1,
         opacity: opacity,
         color: colorBorder,
@@ -148,7 +159,8 @@ const ColombiaMap = ({
       onEachFeature: (feature, layer) => {
         let nombreDpt = feature.properties.NOMBRE_DPT || feature.properties.NAME_1;
         if (nombreDpt) nombreDpt = nombreDpt.toUpperCase();
-        const count = lookupCount(nombreDpt, data);
+        const countData = lookupCount(nombreDpt, data);
+        const count = typeof countData === "object" && countData !== null ? (countData.count || 0) : countData;
         layer.bindPopup(`<strong>${nombreDpt}</strong><br/>Casos: ${count}`);
       }
     }).addTo(mapInstance.current);

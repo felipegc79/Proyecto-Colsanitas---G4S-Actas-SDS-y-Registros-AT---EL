@@ -48,9 +48,8 @@ const SdsCard = ({ item, onSelect }) => {
       className="bg-white p-4 rounded-xl shadow-sm border border-gray-200 mb-3 active:bg-gray-50 transition-all cursor-pointer relative overflow-hidden group"
     >
       <div
-        className={`absolute left-0 top-0 bottom-0 w-1.5 ${
-          isPending ? "bg-blue-500" : "bg-green-500"
-        }`}
+        className={`absolute left-0 top-0 bottom-0 w-1.5 ${isPending ? "bg-blue-500" : "bg-green-500"
+          }`}
       ></div>
 
       <div className="pl-3">
@@ -67,11 +66,10 @@ const SdsCard = ({ item, onSelect }) => {
             <p className="text-xs text-gray-500 mt-1">Prov: {item.Proveedor}</p>
           </div>
           <span
-            className={`px-2 py-1 rounded-full text-xs font-semibold ${
-              isPending
-                ? "bg-blue-100 text-blue-800"
-                : "bg-green-100 text-green-800"
-            }`}
+            className={`px-2 py-1 rounded-full text-xs font-semibold ${isPending
+              ? "bg-blue-100 text-blue-800"
+              : "bg-green-100 text-green-800"
+              }`}
           >
             {item.Estado}
           </span>
@@ -111,16 +109,14 @@ const SdsCard = ({ item, onSelect }) => {
               <>
                 <span className="text-gray-300">/</span>
                 <div
-                  className={`flex-1 bg-white border rounded px-2 py-1 flex flex-col items-center ${
-                    horasPendientes > 0
-                      ? "border-orange-200"
-                      : "border-gray-200"
-                  }`}
+                  className={`flex-1 bg-white border rounded px-2 py-1 flex flex-col items-center ${horasPendientes > 0
+                    ? "border-orange-200"
+                    : "border-gray-200"
+                    }`}
                 >
                   <span
-                    className={`text-[10px] font-bold uppercase ${
-                      horasPendientes > 0 ? "text-orange-600" : "text-gray-400"
-                    }`}
+                    className={`text-[10px] font-bold uppercase ${horasPendientes > 0 ? "text-orange-600" : "text-gray-400"
+                      }`}
                   >
                     Pendientes
                   </span>
@@ -183,9 +179,8 @@ const AccordionSection = ({
         </div>
       </div>
       <div
-        className={`text-gray-400 transform transition-transform duration-300 ${
-          isOpen ? "rotate-180" : ""
-        }`}
+        className={`text-gray-400 transform transition-transform duration-300 ${isOpen ? "rotate-180" : ""
+          }`}
       >
         {isOpen ? (
           <svg
@@ -221,9 +216,8 @@ const AccordionSection = ({
       </div>
     </button>
     <div
-      className={`overflow-hidden transition-all duration-300 ${
-        isOpen ? "max-h-[3000px] mt-3" : "max-h-0"
-      }`}
+      className={`overflow-hidden transition-all duration-300 ${isOpen ? "max-h-[3000px] mt-3" : "max-h-0"
+        }`}
     >
       {children}
     </div>
@@ -867,11 +861,10 @@ const AsignarSDSModule = ({ sdsData, asesores, onSaveAssignments }) => {
           </p>
           <button
             onClick={() => selectedRows.length > 0 && setShowBulkModal(true)}
-            className={`text-xs px-3 py-1 rounded border font-bold transition-colors ${
-              selectedRows.length > 0
-                ? "bg-white border-yellow-300 hover:bg-yellow-100 text-yellow-800 cursor-pointer"
-                : "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
-            }`}
+            className={`text-xs px-3 py-1 rounded border font-bold transition-colors ${selectedRows.length > 0
+              ? "bg-white border-yellow-300 hover:bg-yellow-100 text-yellow-800 cursor-pointer"
+              : "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
+              }`}
           >
             Asignación Múltiple
           </button>
@@ -934,9 +927,8 @@ const AsignarSDSModule = ({ sdsData, asesores, onSaveAssignments }) => {
               {filteredData.map((item) => (
                 <tr
                   key={item.SDS}
-                  className={`border-b hover:bg-gray-50 ${
-                    selectedRows.includes(item.SDS) ? "bg-blue-50" : "bg-white"
-                  }`}
+                  className={`border-b hover:bg-gray-50 ${selectedRows.includes(item.SDS) ? "bg-blue-50" : "bg-white"
+                    }`}
                 >
                   <td className="px-4 py-3">
                     <input
@@ -958,11 +950,10 @@ const AsignarSDSModule = ({ sdsData, asesores, onSaveAssignments }) => {
                   </td>
                   <td className="px-4 py-3 text-center">
                     <select
-                      className={`p-2 border rounded text-xs outline-none focus:ring-1 focus:ring-green-500 w-48 ${
-                        pendingAssignments[item.SDS]
-                          ? "border-green-500 bg-green-50 text-green-800 font-bold"
-                          : "border-gray-300 bg-white"
-                      }`}
+                      className={`p-2 border rounded text-xs outline-none focus:ring-1 focus:ring-green-500 w-48 ${pendingAssignments[item.SDS]
+                        ? "border-green-500 bg-green-50 text-green-800 font-bold"
+                        : "border-gray-300 bg-white"
+                        }`}
                       value={pendingAssignments[item.SDS] || ""}
                       onChange={(e) =>
                         handleIndividualChange(item.SDS, e.target.value)
@@ -1061,6 +1052,9 @@ const LeaderDashboard = ({
     <AppLayout title="Líder de Prevención" onNavigate={null}>
       <div className="flex flex-col md:flex-row min-h-[calc(100vh-80px)] bg-gray-50">
         <aside className="w-full md:w-64 bg-white border-r border-gray-200 flex-shrink-0">
+          <div className="p-6 pb-2 border-b border-gray-100 flex justify-center">
+            <img src="/Seguros-Colsanitas-ARL.png" alt="Logo Colsanitas" className="w-full max-w-[180px] object-contain drop-shadow-sm" />
+          </div>
           <div className="p-6 border-b border-gray-100">
             <div className="flex items-center gap-3 mb-1">
               <div className="w-10 h-10 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center font-bold text-lg">
@@ -1080,11 +1074,10 @@ const LeaderDashboard = ({
               <button
                 key={item.id}
                 onClick={() => setActiveModule(item.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
-                  activeModule === item.id
-                    ? "bg-orange-500 text-white shadow-md"
-                    : "text-gray-600 hover:bg-gray-100"
-                }`}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${activeModule === item.id
+                  ? "bg-orange-500 text-white shadow-md"
+                  : "text-gray-600 hover:bg-gray-100"
+                  }`}
               >
                 <span className="text-lg">{item.icon}</span>
                 {item.label}

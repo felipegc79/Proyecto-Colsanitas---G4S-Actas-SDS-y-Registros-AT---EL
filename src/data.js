@@ -1,6 +1,6 @@
 
 import { REGIONALES } from "./utils/regionales";
-import { saveToDB, getAllFromDB } from "./utils/db";
+import { saveToDB, getAllFromDB, clearAllDB } from "./utils/db";
 
 const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
@@ -205,6 +205,15 @@ export const bulkAddRecordsEL = async (records) => {
   console.log(`📦 bulkAddRecordsEL: resultado = ${ok}`);
   return ok;
 };
+
+export const resetDatabase = async () => {
+  console.log("⚠️ Resetting entire database");
+  await clearAllDB();
+  dataAT.length = 0;
+  dataEL.length = 0;
+  return true;
+};
+
 
 export const replaceAllAT = bulkAddRecordsAT;
 export const replaceAllEL = bulkAddRecordsEL;

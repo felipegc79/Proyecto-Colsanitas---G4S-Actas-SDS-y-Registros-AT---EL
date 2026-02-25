@@ -38,14 +38,7 @@ const AppLayout = ({ children, onNavigate, title }) => (
       </div>
     </header>
 
-    {/* 2. LOGO DEBAJO DEL HEADER (Visible en todas las pantallas internas) */}
-    <div className="w-full flex justify-center pt-6 pb-2 bg-gray-50">
-      <img
-        src="/logo-colsanitas-seguros.png"
-        alt="Logo Colsanitas"
-        className="h-12 object-contain"
-      />
-    </div>
+    {/* Se removió el logo central para ubicarlo en el sidebar izquierdo como se solicitó */}
 
     {/* 3. CONTENIDO PRINCIPAL */}
     <main className="flex-1 p-4 pb-20 overflow-x-hidden">{children}</main>

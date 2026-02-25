@@ -168,7 +168,14 @@ const DashboardEL = ({ dataWorkers }) => {
     // Indicadores
     const indicadores = useMemo(() => {
         const numCasos = filteredData.length;
-        const numCalificados = filteredData.filter(i => i.estadoCaso === "Calificado").length;
+        const numCalificados = filteredData.filter(i =>
+            i.estadoCaso === "Calificado" ||
+            i.poOrigenCalificado ||
+            i.jrOrigenCalificado ||
+            i.jnOrigenCalificado ||
+            i.origenPrimeraOportunidad ||
+            (i.origenActual && i.origenActual !== "Sin información")
+        ).length;
         const numDiagnosticos = allDiagnoses.filter(d => d.cie10 || d.descripcion).length;
 
         return { numCasos, numCalificados, numDiagnosticos };
