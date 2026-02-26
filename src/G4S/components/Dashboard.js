@@ -21,7 +21,11 @@ import { dataAT, dataEL, dataWorkers, DEPARTAMENTOS_COLOMBIA } from "../data";
 import ColombiaMap from "./ColombiaMap";
 
 // --- COLORES MODERNOS ---
-const COLORES_SEVERIDAD = ["#4CAF50", "#FF9800", "#F44336", "#212121"];
+const COLORES_SEVERIDAD = [
+  "#4CAF50", "#FF9800", "#F44336", "#212121",
+  "#3F51B5", "#9C27B0", "#00BCD4", "#FFC107",
+  "#E91E63", "#009688", "#795548", "#607D8B"
+];
 const COLORES_GENERO = { Masculino: "#1565C0", Femenino: "#E53935" };
 const COLORES_MODERNOS = [
   "url(#colorGradient1)",
@@ -1289,7 +1293,7 @@ const Dashboard = () => {
                   <tr key={idx}>
                     <td style={tdStyle}>{item.name}</td>
                     <td style={tdStyle}>
-                      <strong>{item.value}</strong>
+                      <strong>{item.total}</strong>
                     </td>
                   </tr>
                 ))}

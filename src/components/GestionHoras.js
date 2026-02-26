@@ -119,9 +119,12 @@ const GestionHoras = ({ dataWorkers, setDataWorkers }) => {
                 <Users size={14} /> Total Trabajadores:
               </label>
               <input
-                type="number"
-                value={localData[linea].trabajadores}
-                onChange={(e) => handleChange(linea, "trabajadores", e.target.value)}
+                type="text"
+                value={Number(localData[linea].trabajadores || 0).toLocaleString("es-CO")}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\./g, "");
+                  if (!isNaN(val)) handleChange(linea, "trabajadores", val);
+                }}
                 className="input-colsanitas"
                 style={{ backgroundColor: "white" }}
               />
@@ -132,9 +135,12 @@ const GestionHoras = ({ dataWorkers, setDataWorkers }) => {
                 <Clock size={14} /> Horas Hombre Mes:
               </label>
               <input
-                type="number"
-                value={localData[linea].horas}
-                onChange={(e) => handleChange(linea, "horas", e.target.value)}
+                type="text"
+                value={Number(localData[linea].horas || 0).toLocaleString("es-CO")}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\./g, "");
+                  if (!isNaN(val)) handleChange(linea, "horas", val);
+                }}
                 className="input-colsanitas"
                 style={{ backgroundColor: "white" }}
               />
