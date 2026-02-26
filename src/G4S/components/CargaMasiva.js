@@ -695,6 +695,13 @@ const CargaMasiva = ({ type }) => {
     }
   };
 
+  const handleDownloadTemplate = () => {
+    const ws = XLSX.utils.aoa_to_sheet([camposGuia]);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, `Plantilla_${type}`);
+    XLSX.writeFile(wb, `Plantilla_${type}.xlsx`);
+  };
+
   const styles = {
     container: {
       padding: "40px",
@@ -768,12 +775,20 @@ const CargaMasiva = ({ type }) => {
           <h2 style={{ color: "#CD1920", marginBottom: "10px" }}>
             Subir Archivo - Base de Datos {type}
           </h2>
-          <button
-            onClick={handleReset}
-            style={{ padding: "8px 15px", backgroundColor: "#dc3545", color: "white", border: "none", borderRadius: "5px", cursor: "pointer", fontWeight: "bold" }}
-          >
-            🗑️ Resetear DB (Pruebas)
-          </button>
+          <div>
+            <button
+              onClick={handleDownloadTemplate}
+              style={{ padding: "8px 15px", backgroundColor: "#28a745", color: "white", border: "none", borderRadius: "5px", cursor: "pointer", fontWeight: "bold", marginRight: "10px" }}
+            >
+              ⬇️ Descargar Plantilla Excel
+            </button>
+            <button
+              onClick={handleReset}
+              style={{ padding: "8px 15px", backgroundColor: "#dc3545", color: "white", border: "none", borderRadius: "5px", cursor: "pointer", fontWeight: "bold" }}
+            >
+              🗑️ Resetear DB (Pruebas)
+            </button>
+          </div>
         </div>
         <p style={{ color: "#666", marginBottom: "20px" }}>
           Arrastre el archivo o haga clic para buscar. El sistema detectará
